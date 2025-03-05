@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import dishRoutes from './routes/dishesRoutes.js';
-import ingredientRoutes from './routes/ingredientRoutes.js';
+import ingredientRoutes from './routes/ingredientsRoutes.js';
 
 
 

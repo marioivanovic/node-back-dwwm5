@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { upload } from '../config/multer.js';
 import { uploadImage } from '../utils/cloudinaryUtils.js';
+import { isAuth } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -43,9 +44,11 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
             imageUrl = result.secure_url;
         }
 
+        const role = 'user';
+
         const [result] = await connection.execute(
-            'INSERT INTO users (name, email, password, age, imageUrl) VALUES (?, ?, ?, ?, ?)',
-            [name, email, hashedPassword, age, imageUrl]
+            'INSERT INTO users (name, email, password, age, imageUrl, role) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, email, hashedPassword, age, imageUrl, role]
         );
 
         const token = jwt.sign(
@@ -63,7 +66,8 @@ router.post('/register', upload.single('profileImage'), async (req, res) => {
                 name,
                 email,
                 age,
-                imageUrl
+                imageUrl,
+                role
             }
         });
 
@@ -123,7 +127,7 @@ router.post('/login', async (req, res) => {
         connection.release();
 
         const { password: _, ...userWithoutPassword } = user;
-        
+
         res.json({
             status: 'success',
             token,
@@ -139,4 +143,12 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/me', isAuth, (req, res) => {
+    res.json(req.user);
+});
+
 export default router;
+
+
+
+
